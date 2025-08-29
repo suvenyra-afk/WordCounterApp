@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "lt.wordcounter" // jei reikia, pakeisk į savo package iš Manifest
+    namespace = "lt.wordcounter" // jei reikia, pakeisk pagal AndroidManifest.xml
     compileSdk = 34
 
     defaultConfig {
@@ -13,6 +13,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -52,6 +53,8 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+
+    // Debug
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
