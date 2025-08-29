@@ -31,7 +31,7 @@ fun EmotionsScreen(onBack: () -> Unit) {
             )
             Spacer(Modifier.height(16.dp))
 
-            // mūsų emocijų diagrama
+            // emocijų diagrama
             EmotionChart()
         }
     }
