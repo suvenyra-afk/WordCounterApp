@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">WordCounter</string>
-    <string name="notification_channel_name">Word counting</string>
-    <string name="notification_channel_desc">Counts your spoken words in background</string>
+    <string name="app_name">WordCounterApp</string>
+    <string name="app_hello">Sveiki! Tai minimalus build&#8211;testas 🙂</string>
 </resources>
