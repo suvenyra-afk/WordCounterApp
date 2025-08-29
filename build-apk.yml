@@ -1,0 +1,70 @@
+name: Build APK (no wrapper in repo)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      # Įdiegia Android SDK į runnerį
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      # Automatiškai parenka ir įdiegia reikiamą platformą pagal tavo build.gradle(.kts)
+      - name: Install SDK packages (auto-detect)
+        shell: bash
+        run: |
+          set -e
+          COMPILE_SDK=$(grep -h -m1 -oP 'compileSdk(?:Version)?\s*=?\s*\K\d+' **/build.gradle* || echo 34)
+          BUILD_TOOLS=$(grep -h -m1 -oP 'buildToolsVersion\s*[= ]\s*["'\'']\K[0-9.]+' **/build.gradle* || echo "")
+          yes | sdkmanager "platform-tools" "platforms;android-${COMPILE_SDK}"
+          if [ -n "$BUILD_TOOLS" ]; then
+            yes | sdkmanager "build-tools;${BUILD_TOOLS}"
+          fi
+
+      # Atsisiunčia GRADLE 8.7 į runnerį (nereikia wrapper.jar repo viduje)
+      - name: Download Gradle 8.7 and add to PATH
+        shell: bash
+        run: |
+          set -e
+          sudo apt-get update && sudo apt-get install -y unzip curl
+          curl -L https://services.gradle.org/distributions/gradle-8.7-bin.zip -o gradle-8.7-bin.zip
+          sudo mkdir -p /opt/gradle
+          sudo unzip -q gradle-8.7-bin.zip -d /opt/gradle
+          echo "/opt/gradle/gradle-8.7/bin" >> $GITHUB_PATH
+
+      # Čia sugeneruojamas wrapper'is tik bėgimui (neįkeliam į repo)
+      - name: Generate Gradle Wrapper (8.7)
+        shell: bash
+        run: |
+          gradle -v
+          gradle wrapper --gradle-version 8.7 --distribution-type all
+          chmod +x gradlew
+
+      # Buildinam DEBUG apk (stebuklingas žingsnis)
+      - name: Build debug APK
+        run: ./gradlew --no-daemon assembleDebug
+
+      # Įkeliame .apk kaip artifact, kad galėtum parsisiųsti
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: |
+            **/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
