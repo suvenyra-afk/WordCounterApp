@@ -6,17 +6,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import lt.wordcounter.app.data.Repository
 import lt.wordcounter.app.storage.Prefs
 import lt.wordcounter.app.ui.charts.DailyChart
 import lt.wordcounter.app.ui.charts.HourlyChart
-import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun MainScreen(onStart: ()->Unit, onStop: ()->Unit) {
+fun MainScreen(
+    onStart: ()->Unit,
+    onStop: ()->Unit,
+    onOpenEmotions: ()->Unit   // <- nauja navigacija į emocijų ekraną
+) {
     val ctx = LocalContext.current
     val repo = remember { Repository(ctx) }
     val prefs = remember { Prefs(ctx) }
@@ -42,7 +46,12 @@ fun MainScreen(onStart: ()->Unit, onStop: ()->Unit) {
     }
 
     Column(Modifier.fillMaxSize().padding(16.dp)) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+        // viršus
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text("Šiandien: $today žodžių", style = MaterialTheme.typography.titleLarge)
             Row {
                 Button(onClick = onStart) { Text("START") }
@@ -50,6 +59,7 @@ fun MainScreen(onStart: ()->Unit, onStop: ()->Unit) {
                 OutlinedButton(onClick = onStop) { Text("STOP") }
             }
         }
+
         Spacer(Modifier.height(8.dp))
         Text("Paskutinės 30 dienų", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
@@ -69,14 +79,28 @@ fun MainScreen(onStart: ()->Unit, onStop: ()->Unit) {
         HourlyChart(hourly)
 
         Spacer(Modifier.height(16.dp))
+        // naujas mygtukas emocijoms
+        Button(
+            onClick = onOpenEmotions,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Emocijų analizė")
+        }
+
+        Spacer(Modifier.height(16.dp))
         Text("Nustatymai", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Žodžiai / sekundę: %.2f".format(wps), Modifier.weight(1f))
-            Slider(value = wps, onValueChange = {
-                wps = it
-                prefs.wordsPerSecond = it
-            }, valueRange = 0.5f..5.0f, modifier = Modifier.weight(2f))
+            Slider(
+                value = wps,
+                onValueChange = {
+                    wps = it
+                    prefs.wordsPerSecond = it
+                },
+                valueRange = 0.5f..5.0f,
+                modifier = Modifier.weight(2f)
+            )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = onlyUser, onCheckedChange = {
@@ -86,7 +110,9 @@ fun MainScreen(onStart: ()->Unit, onStop: ()->Unit) {
             Text("Skaičiuoti tik mano balsą (eksperimentinė funkcija)")
         }
         if (onlyUser) {
-            Button(onClick = { captureVoiceprint(ctx, prefs) }) { Text("Užfiksuoti mano balso parašą") }
+            Button(onClick = { captureVoiceprint(ctx, prefs) }) {
+                Text("Užfiksuoti mano balso parašą")
+            }
             Text("Patarimas: pasakykite kelias frazes (~10 s), laikydami telefoną įprastu atstumu.")
         }
     }
@@ -109,8 +135,5 @@ private fun DropdownDay(days: List<String>, selected: String?, onChange: (String
 
 @Composable
 private fun captureVoiceprint(context: Context, prefs: Prefs) {
-    // This is a very simple blocking capture using the service's MFCC logic.
-    // For brevity we reuse service-side code path by toggling and letting it record a segment;
-    // In production, implement a dedicated recorder here.
     Text("Balso parašo fiksavimas: paleiskite START, pakalbėkite 10 s, sustabdykite ir spauskite čia vėl, kad atnaujintumėte.")
 }
