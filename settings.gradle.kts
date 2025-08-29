@@ -15,5 +15,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TavoProjektoPavadinimas"
+rootProject.name = "suvenyra-afk"
 include(":app")
