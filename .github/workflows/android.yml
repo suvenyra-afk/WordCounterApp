@@ -20,20 +20,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Jei turi gradlew faile -> naudok ./gradlew
-      # Jei neturi gradlew -> naudok gradle komandą
       - name: Build Release APK
-        run: |
-          if [ -f "./gradlew" ]; then
-            chmod +x ./gradlew
-            ./gradlew assembleRelease
-          else
-            gradle assembleRelease
-          fi
+        run: ./gradlew assembleRelease
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
           path: app/build/outputs/apk/release/*.apk
-          
