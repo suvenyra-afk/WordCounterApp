@@ -1,8 +1,9 @@
-package com.suvenyra.wordcounterapp
+package lt.wordcounter.app
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -14,38 +15,30 @@ fun PremiumScreen(premiumManager: PremiumManager) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Text("Įveskite Premium kodą", style = MaterialTheme.typography.titleLarge)
+        Text("Įveskite Premium kodą")
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             value = code,
             onValueChange = { code = it },
-            label = { Text("Premium kodas") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text("Kodas") }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Button(
-            onClick = {
-                if (premiumManager.redeemCode(code)) {
-                    message = "✅ Premium sėkmingai aktyvuotas!"
-                } else {
-                    message = "❌ Neteisingas kodas"
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Button(onClick = {
+            val success = premiumManager.redeemCode(code)
+            message = if (success) "Premium aktyvuotas ✅" else "Neteisingas kodas ❌"
+        }) {
             Text("Aktyvuoti")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        if (message.isNotEmpty()) {
-            Text(message)
-        }
+        Text(message)
     }
 }
