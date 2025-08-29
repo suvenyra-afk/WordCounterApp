@@ -1,0 +1,29 @@
+name: Generate Gradle Wrapper
+
+on:
+  workflow_dispatch: # leis tau ranka paleisti
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.0
+
+      - name: Commit wrapper files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add gradlew gradlew.bat gradle/wrapper
+          git commit -m "Generate gradle wrapper"
+          git push
+          
