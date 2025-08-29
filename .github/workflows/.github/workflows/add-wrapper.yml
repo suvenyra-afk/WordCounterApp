@@ -1,0 +1,38 @@
+name: Build debug APK
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Įdiegiame Android SDK į runner'į
+      - uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
+
+      # Įdiek SDK versijas (jei projekte kita compileSdk – žr. pastabą žemiau)
+      - name: Install platforms & build-tools
+        run: |
+          sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      # Pastaba: projektas yra WordCounterApp aplanke
+      - name: Build debug APK
+        working-directory: WordCounterApp
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug.apk
+          path: WordCounterApp/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          
