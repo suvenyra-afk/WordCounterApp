@@ -1,10 +1,9 @@
 workflows:
   android-build:
-    name: Android Build
+    name: Android Debug Build
     max_build_duration: 60
     environment:
-      vars:
-        JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+      java: 17
     scripts:
       - name: Fix gradlew permissions
         script: chmod +x gradlew
