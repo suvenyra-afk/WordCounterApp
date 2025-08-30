@@ -2,6 +2,7 @@ workflows:
   android-build:
     name: Android build without wrapper
     environment:
+      os: linux
       vars:
         JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     scripts:
