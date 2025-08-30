@@ -2,10 +2,8 @@ workflows:
   android-build:
     name: Android build without wrapper
     environment:
-      sdk: android
       vars:
         JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
-      gradle: 7.5
     scripts:
       - name: Build Debug APK
         script: |
