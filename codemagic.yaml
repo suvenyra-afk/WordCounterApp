@@ -1,9 +1,9 @@
 workflows:
   android-build:
     name: Android build without wrapper
+    instance_type: linux_x2   # 👈 svarbu, kad neimtų macOS
     environment:
-      vars:
-        JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
+      java: 11
     scripts:
       - name: Install Gradle
         script: |
@@ -15,4 +15,3 @@ workflows:
           gradle assembleDebug
     artifacts:
       - app/build/outputs/apk/debug/app-debug.apk
-      
