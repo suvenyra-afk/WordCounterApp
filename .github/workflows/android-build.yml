@@ -1,4 +1,4 @@
-name: Build APK
+name: Android Build
 
 on:
   push:
@@ -11,23 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Atsisiunčia tavo kodą
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # 2. Nustato JDK (Gradle 9 reikalauja Java 17+)
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 17
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+      # 3. Duoda vykdymo leidimą gradlew
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
 
-      - name: Build with Gradle
-        run: gradle assembleDebug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: WordCounter-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+      # 4. Surenka projektą (čia jau tavo buildas vyksta)
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
