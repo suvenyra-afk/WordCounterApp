@@ -29,3 +29,5 @@ jobs:
       # 4. Surenka projektą (čia jau tavo buildas vyksta)
       - name: Build Debug APK
         run: ./gradlew assembleDebug
+
+        
